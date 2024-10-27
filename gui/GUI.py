@@ -9,110 +9,20 @@ class Puzzle(QMainWindow):
         super().__init__()
         self.algorithm_index = 0
         self.initial_state = 12345678
+        self.current_step = 0
+        self.steps = ["125340678","120345678", "102345678", "012345678"] #for testing
         self.setWindowTitle("8-Puzzle Solver")
         self.setGeometry(650, 200, 700, 700)
         self.setWindowIcon(QIcon("icon.jpg"))
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowMaximizeButtonHint)
         self.initUI()
 
     def initUI(self):
         self.central_widget = QWidget(self)
         self.setCentralWidget(self.central_widget)
-        
-        self.vbox = QVBoxLayout()
-        self.vbox.setContentsMargins(20, 20, 20, 20)
-        self.vbox.setSpacing(10)
 
-        self.label = QLabel("Search Algorithms")
-        self.label.setAlignment(Qt.AlignHCenter)
-        self.label.setStyleSheet("""
-            font-size: 20px;
-        """)
-        self.label.setFixedHeight(30)
-
-        self.algorithms_list = QComboBox()
-        self.algorithms_list.addItem("Choose Algorithm")
-        self.algorithms_list.addItems(['BFS','DFS','Iterative DFS', 'A*'])
-        self.algorithms_list.setStyleSheet("""
-            font-size: 15px;                                
-        """)
-        self.algorithms_list.setFixedHeight(30)
-        self.algorithms_list.activated.connect(self.set_algorithm)
-
-        self.solve_button = QPushButton("solve",self)
-        self.solve_button.setFixedHeight(50)
-        self.solve_button.setFixedWidth(100)
-        self.solve_button.clicked.connect(self.solve)
-       
-      
-        self.vbox.addWidget(self.label)
-        self.vbox.addWidget(self.algorithms_list)
-        self.vbox.addWidget(self.solve_button)
-        
-        #for displaying output 
-        self.vbox2 = QVBoxLayout() 
-        self.vbox2.setSpacing(5)
-        
-        self.hbox = QHBoxLayout()
-
-        self.label1 = QLabel("Expanded nodes")
-        self.label1.setAlignment(Qt.AlignHCenter)
-        self.label1.setFixedHeight(30)
-
-        self.label2 = QLabel("Running time")
-        self.label2.setAlignment(Qt.AlignHCenter)
-        self.label2.setFixedHeight(30) 
-
-        self.label3 = QLabel("cost")
-        self.label3.setAlignment(Qt.AlignHCenter)
-        self.label3.setFixedHeight(30) 
-
-        self.label4 = QLabel("Search depth")
-        self.label4.setAlignment(Qt.AlignHCenter)
-        self.label4.setFixedHeight(30) 
-
-        self.hbox.addWidget(self.label1)
-        self.hbox.addWidget(self.label2)
-        self.hbox.addWidget(self.label3)
-        self.hbox.addWidget(self.label4)
-
-        self.hbox2 = QHBoxLayout()
-        self.expanded_nodes= QLineEdit()
-        self.expanded_nodes.setReadOnly(True)
-
-        self.running_time= QLineEdit()
-        self.running_time.setReadOnly(True)
-
-        self.cost= QLineEdit()
-        self.cost.setReadOnly(True)
-
-        self.search_depth= QLineEdit()
-        self.search_depth.setReadOnly(True)
-
-        self.hbox2.addWidget(self.expanded_nodes)
-        self.hbox2.addWidget(self.running_time)
-        self.hbox2.addWidget(self.cost)
-        self.hbox2.addWidget(self.search_depth)
-
-        self.label5 = QLabel("Steps")
-        self.label5.setAlignment(Qt.AlignHCenter)
-        self.label5.setFixedWidth(200) 
-
-        self.path = QPlainTextEdit()
-        self.path.setReadOnly(True)
-        self.scroll_area = QScrollArea()
-        self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setWidget(self.path)
-        self.scroll_area.setFixedWidth(200)
-        self.scroll_area.setMinimumHeight(100)
-
-        self.vbox2.addLayout(self.hbox)
-        self.vbox2.addLayout(self.hbox2)
-        self.vbox2.addWidget(self.label5)
-        self.vbox2.addWidget(self.scroll_area)
-
-       
         self.grid = QGridLayout()
-        self.grid.setContentsMargins(300, 50, 300, 50)
+        self.grid.setContentsMargins(300, 0, 300, 0)
 
         self.cell1 = QLineEdit(self) 
         self.cell2 = QLineEdit(self) 
@@ -130,7 +40,7 @@ class Puzzle(QMainWindow):
             cell.setAlignment(Qt.AlignCenter)
             cell.setFixedSize(70, 70)
             cell.setText(str(cnt))
-            cell.setStyleSheet("font-size: 20px; font-weight: bold;")
+            cell.setStyleSheet("font-size: 20px; font-weight: bold; border: 5px solid #0a0a66; border-radius: 5px")
             cnt += 1
 
 
@@ -143,6 +53,107 @@ class Puzzle(QMainWindow):
         self.grid.addWidget(self.cell7, 2, 0)
         self.grid.addWidget(self.cell8, 2, 1)
         self.grid.addWidget(self.cell9, 2, 2)
+
+        self.vbox = QVBoxLayout()
+        self.vbox.setContentsMargins(20, 20, 20, 20)
+        self.vbox.setSpacing(10)
+        
+        self.algorithms_list = QComboBox()
+        self.algorithms_list.addItem("CHOOSE SEARCH ALGORITHM")
+        self.algorithms_list.addItems(['BFS','DFS','Iterative DFS', 'A*(Manhattan)', 'A*(Eucladian)'])
+        self.algorithms_list.setFixedHeight(40)
+        self.algorithms_list.activated.connect(self.set_algorithm)
+
+        self.buttons = QHBoxLayout()
+
+        self.solve_button = QPushButton("SOLVE",self)
+        self.solve_button.setFixedHeight(50)
+        self.solve_button.setFixedWidth(100)
+        self.solve_button.clicked.connect(self.solve)
+
+        
+
+        self.stop_button = QPushButton("STOP",self)
+        self.stop_button.setFixedHeight(50)
+        self.stop_button.setFixedWidth(100)
+        self.stop_button.clicked.connect(self.stop_steps)
+       
+        self.buttons.addWidget(self.solve_button)
+        self.buttons.addWidget(self.stop_button)
+
+        self.vbox.addWidget(self.algorithms_list)
+        self.vbox.addLayout(self.buttons)
+        
+        #for displaying output 
+        self.vbox2 = QVBoxLayout() 
+        self.vbox2.setSpacing(5)
+        
+        self.hbox = QHBoxLayout()
+
+        self.label1 = QLabel("EXPANDED NODES")
+        self.label1.setAlignment(Qt.AlignHCenter)
+        self.label1.setFixedHeight(30)
+
+        self.label2 = QLabel("RUNNING TIME")
+        self.label2.setAlignment(Qt.AlignHCenter)
+        self.label2.setFixedHeight(30) 
+
+        self.label3 = QLabel("COST")
+        self.label3.setAlignment(Qt.AlignHCenter)
+        self.label3.setFixedHeight(30) 
+
+        self.label4 = QLabel("SEARCH DEPTH")
+        self.label4.setAlignment(Qt.AlignHCenter)
+        self.label4.setFixedHeight(30) 
+
+        self.hbox.addWidget(self.label1)
+        self.hbox.addWidget(self.label2)
+        self.hbox.addWidget(self.label3)
+        self.hbox.addWidget(self.label4)
+
+        self.hbox2 = QHBoxLayout()
+
+        self.expanded_nodes= QLineEdit()
+        self.expanded_nodes.setReadOnly(True)
+        self.expanded_nodes.setFixedHeight(30)
+        self.expanded_nodes.setAlignment(Qt.AlignCenter)
+        
+        self.running_time= QLineEdit()
+        self.running_time.setReadOnly(True)
+        self.running_time.setFixedHeight(30)
+        self.running_time.setAlignment(Qt.AlignCenter)
+
+        self.cost= QLineEdit()
+        self.cost.setReadOnly(True)
+        self.cost.setFixedHeight(30)
+        self.cost.setAlignment(Qt.AlignCenter)
+
+        self.search_depth= QLineEdit()
+        self.search_depth.setReadOnly(True)
+        self.search_depth.setFixedHeight(30)                             
+        self.search_depth.setAlignment(Qt.AlignCenter)                        
+
+        self.hbox2.addWidget(self.expanded_nodes)
+        self.hbox2.addWidget(self.running_time)
+        self.hbox2.addWidget(self.cost)
+        self.hbox2.addWidget(self.search_depth)
+
+        self.label5 = QLabel("STEPS")
+        self.label5.setAlignment(Qt.AlignCenter)
+     
+
+        self.path = QPlainTextEdit()
+        self.path.setReadOnly(True)
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setWidget(self.path)
+        
+
+        self.vbox2.addLayout(self.hbox)
+        self.vbox2.addLayout(self.hbox2)
+        self.vbox2.addWidget(self.label5)
+        self.vbox2.addWidget(self.scroll_area)
+
        
         main_layout = QVBoxLayout(self.central_widget)
         main_layout.setSpacing(10)
@@ -150,6 +161,55 @@ class Puzzle(QMainWindow):
         main_layout.addLayout(self.vbox) 
         main_layout.addLayout(self.vbox2) 
         self.central_widget.setLayout(main_layout)
+
+        self.setStyleSheet("""
+            QMainWindow{
+                background-color: #f0f2f5
+            }
+                           
+            QLabel{
+                font-weight: bold;
+                font-size: 15px;
+                color: #0a0a66         
+            }
+                           
+            QPushButton{
+                background-color: white;
+                font-weight: bold;
+                font-size: 18px;
+                font-style: italic;
+                border: 2px solid #6b0a1e;
+                color:  #6b0a1e;
+                border-radius: 7px;      
+            }
+            
+            QPushButton:hover{
+                background-color: #6b0a1e;
+                color: white;
+            }
+            
+            QComboBox{
+                color: #051730;
+                font-weight: bold;
+                font-size: 17px;
+            }
+                           
+            QGridLayout{
+                background-color: yellow
+            }
+            
+            QLineEdit{
+                text-align: center;
+                font-size: 15px;
+                font-weight: bold;
+            }
+            
+            QPlainTextEdit{
+                font-size: 17px;
+                font-weight: bold;
+            }
+                   
+        """)
 
         #hiding output widgets
         self.label1.hide()
@@ -163,10 +223,9 @@ class Puzzle(QMainWindow):
         self.search_depth.hide()
         self.scroll_area.hide()
 
-        # self.timer = QTimer()
-        # self.timer.timeout.connect(self.solve_steps)
-        # self.current_step = 0
-        # # self.steps = ["125340678","120345678", "102345678", "012345678"] #for testing
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.solve_steps)
+        
 
     def solve(self):
             solution = {}
@@ -181,7 +240,9 @@ class Puzzle(QMainWindow):
             elif self.algorithm_index == 3:
                 solution = factory.create_search_algorithm("IDS",self.initial_state)
             elif self.algorithm_index == 4:
-                solution = factory.create_search_algorithm("A*",self.initial_state)
+                solution = factory.create_search_algorithm("A*(manhattan)",self.initial_state)
+            elif self.algorithm_index == 5:
+                solution = factory.create_search_algorithm("A*(eucladian)",self.initial_state)
             else:
                 QMessageBox.warning(self, "Warning", "Please Choose a Search Algorithm")
                 return
@@ -190,23 +251,27 @@ class Puzzle(QMainWindow):
                 QMessageBox.warning(self, "Unfortunately", "This Puzzle is Unsolvable")
             else :
                 self.show_output(solution)
-                
-       
+                self.timer.start(1000)
+
     
-    # def solve_steps(self):
-    #     if self.current_step < len(self.steps):
-    #         step = self.steps[self.current_step]
-    #         idx = 0
-    #         for cell in self.cells:
-    #             if step[idx] != '0':
-    #                 cell.setStyleSheet("font-size: 20px; font-weight: bold")
-    #             else :
-    #                 cell.setStyleSheet("font-size: 20px; font-weight: bold; background-color: #bac0cf")
-    #             cell.setText(step[idx])
-    #             idx +=1
-    #         self.current_step += 1
-    #     else:
-    #         self.timer.stop()
+    def solve_steps(self):
+        if self.current_step < len(self.steps):
+            step = self.steps[self.current_step]
+            idx = 0
+            for cell in self.cells:
+                if step[idx] != '0' :
+                    cell.setStyleSheet("font-size: 20px; font-weight: bold; border: 5px solid #0a0a66; border-radius: 5px")
+                else:
+                    cell.setStyleSheet("background-color: #bfbfbf;font-size: 20px; font-weight: bold; border-radius: 5px;")
+                cell.setText(step[idx])
+                idx +=1
+            self.current_step += 1
+        else:
+            self.current_step = 0
+            self.timer.stop()
+
+    def stop_steps(self):
+        self.timer.stop()
     
     def set_algorithm(self):
         self.algorithm_index = self.algorithms_list.currentIndex()
@@ -215,16 +280,18 @@ class Puzzle(QMainWindow):
         self.initial_state = 0 
         for cell in self.cells:
             self.initial_state = self.initial_state * 10 + int(cell.text())
-        print(self.initial_state)
            
-
     def show_output(self, solution):
-        print(str(solution["expanded_nodes"]))
         self.expanded_nodes.setText(str(solution["expanded_nodes"]))
         self.running_time.setText(str(solution["running_time"]))
         self.cost.setText(str(solution["cost"]))
         self.search_depth.setText(str(solution["search_depth"]))
-        self.path.setPlainText(str(solution["path"])) #to be handeled
+        
+        step_res = ''
+        for path in solution["path"]:
+            step_res += path + ' → '
+            
+        self.path.setPlainText(step_res[:len(step_res) - 2]) 
 
         self.label1.show()
         self.label2.show()
