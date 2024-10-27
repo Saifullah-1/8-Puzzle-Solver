@@ -89,6 +89,7 @@ class Service:
         Gets the path from the initial state to the goal state.
         :param parent: Dictionary contains all children parents and the direction.
         :return: List of directions and states to the goal state.
+        :return: List of directions and states to the goal state.
         """
         path = []
         states = []
@@ -181,5 +182,4 @@ class Service:
             distance += math.sqrt( (row - true_row)**2 + (col - true_col)**2 ) 
         
         return round(distance)
-
 
