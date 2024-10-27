@@ -4,7 +4,7 @@ from service.Service import Service
 
 class DFS:
     @staticmethod
-    def execute(initial_state):
+    def execute(initial_state: int):
         # check if the state is solvable or not
         if not Service.is_solvable(initial_state):
             return False
@@ -53,9 +53,9 @@ class DFS:
 
 
         end = time.time()
-        path = Service.get_path(parent)
+        path, states = Service.get_path(parent)
         expanded_nodes = len(visited)
         running_time = (end - start) * 1000
         cost = parent[12345678][2]
 
-        return Service.info(running_time, expanded_nodes, path, search_depth, cost)
+        return Service.info(running_time, expanded_nodes, path, states, search_depth, cost)
