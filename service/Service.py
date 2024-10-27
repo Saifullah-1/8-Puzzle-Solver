@@ -95,7 +95,7 @@ class Service:
         states = []
         node = 12345678
         while parent[node][1] is not None:
-            states.append(str(parent[node][0]))
+            states.append(str(node))
             path.append(parent[node][1])
             node = parent[node][0]
 

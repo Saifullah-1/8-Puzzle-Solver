@@ -1,5 +1,4 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QVBoxLayout,QHBoxLayout,QGridLayout, QPushButton, QComboBox, QLineEdit, QMessageBox, QPlainTextEdit, QScrollArea
+from PyQt5.QtWidgets import QMainWindow, QLabel, QWidget, QVBoxLayout,QHBoxLayout,QGridLayout, QPushButton, QComboBox, QLineEdit, QMessageBox, QPlainTextEdit, QScrollArea
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QTimer
 from algorithms.SearchFactory import SearchFactory
@@ -164,7 +163,7 @@ class Puzzle(QMainWindow):
 
         self.setStyleSheet("""
             QMainWindow{
-                background-color: #f0f2f5
+                background-color: #d7dade
             }
                            
             QLabel{
@@ -240,9 +239,9 @@ class Puzzle(QMainWindow):
             elif self.algorithm_index == 3:
                 solution = factory.create_search_algorithm("IDS",self.initial_state)
             elif self.algorithm_index == 4:
-                solution = factory.create_search_algorithm("A*(manhattan)",self.initial_state)
+                solution = factory.create_search_algorithm("A*(MANHAATTEN)",self.initial_state)
             elif self.algorithm_index == 5:
-                solution = factory.create_search_algorithm("A*(eucladian)",self.initial_state)
+                solution = factory.create_search_algorithm("A*(EUCLIDEAN)",self.initial_state)
             else:
                 QMessageBox.warning(self, "Warning", "Please Choose a Search Algorithm")
                 return
@@ -253,7 +252,6 @@ class Puzzle(QMainWindow):
                 self.show_output(solution)
                 self.steps = solution["states"]
                 self.steps.append("012345678")
-                print(self.steps)
                 self.current_step = 0
                 self.timer.start(1000)
 
@@ -277,10 +275,9 @@ class Puzzle(QMainWindow):
                     cell.setStyleSheet("background-color: #bfbfbf;font-size: 20px; font-weight: bold; border-radius: 5px;")
                 
                 cell.setText(c)
-                
+
                 cnt +=1
                 idx +=1
-
 
             self.current_step += 1
         else:
@@ -303,7 +300,7 @@ class Puzzle(QMainWindow):
            
     def show_output(self, solution):
         self.expanded_nodes.setText(str(solution["expanded_nodes"]))
-        self.running_time.setText(str(solution["running_time"]))
+        self.running_time.setText(str(round(solution["running_time"], 5)))
         self.cost.setText(str(solution["cost"]))
         self.search_depth.setText(str(solution["search_depth"]))
         
@@ -323,10 +320,3 @@ class Puzzle(QMainWindow):
         self.cost.show()
         self.search_depth.show()
         self.scroll_area.show()
-
-
-# to be placed in main
-app = QApplication(sys.argv)
-puzzle = Puzzle()
-puzzle.show()
-sys.exit(app.exec_())
