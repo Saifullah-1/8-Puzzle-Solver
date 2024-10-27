@@ -1,3 +1,4 @@
+import math
 class Service:
     @staticmethod
     def count_inversions(initial_state: str):
@@ -87,20 +88,24 @@ class Service:
         """
         Gets the path from the initial state to the goal state.
         :param parent: Dictionary contains all children parents and the direction.
-        :return: List of directions to the goal state.
+        :return: List of directions and states to the goal state.
         """
         path = []
+        states = []
         node = 12345678
         while parent[node][1] is not None:
+            states.append(str(parent[node][1]))
             path.append(parent[node][1])
             node = parent[node][0]
 
         path.reverse()
-        return path
+        states.reverse()
+        return path, states
 
     @staticmethod
-    def info(running_time, expanded_nodes, path, search_depth, cost):
+    def info(running_time, expanded_nodes, path, states, search_depth, cost):
         """
+        :param states: States of the path to the goal.
         :param running_time: Searching running time.
         :param expanded_nodes: Number of expanded nodes.
         :param path: Path to the goal.
@@ -113,7 +118,68 @@ class Service:
             "path": path,
             "running_time": running_time,
             "cost": cost,
-            "search_depth": search_depth
-        }
-
+            "search_depth": search_depth,
+            "states": states
+        }   
         return solution
+    
+    @staticmethod
+    def refine_state(state : int):
+        # Returns the state in the form of a string with a leading zero if it needed
+        state = str(state)
+        
+        try:
+            ind = state.index('0')
+        except ValueError:
+            state = '0' + state
+        return state
+    
+    @staticmethod
+    def manhatten_distance(state: int):
+        """
+        Calculates the manhatten distance of a given state.
+        :param state: The state to calculate the manhatten distance.
+        :return: The manhatten distance of the given state.
+        """
+        
+        state = Service.refine_state(state)
+        distance = 0
+        
+        for i in range(1, 9):
+            ind = state.index(str(i))
+            # getting the current row and col of tile with number i
+            row = ind // 3
+            col = ind % 3
+            # getting the correcr row and col of tile with number i
+            true_row = i // 3
+            true_col = i % 3
+            # Calculate the manhatten distance
+            distance += abs(row - true_row) + abs(col - true_col)
+        
+        return distance
+    
+    @staticmethod
+    def euclidean_distance(state: int):
+        """
+        Calculates the euclidean distance of a given state.
+        :param state: The state to calculate the euclidean distance.
+        :return: The euclidean distance of the given state.
+        """
+        
+        state = Service.refine_state(state)
+        distance = 0
+        
+        for i in range(1, 9):
+            ind = state.index(str(i))
+            # getting the current row and col of tile with number i
+            row = ind // 3
+            col = ind % 3
+            # getting the correcr row and col of tile with number i
+            true_row = i // 3
+            true_col = i % 3
+            # Calculate the euclidean distance
+            distance += math.sqrt( (row - true_row)**2 + (col - true_col)**2 ) 
+        
+        return round(distance)
+
+
