@@ -87,20 +87,24 @@ class Service:
         """
         Gets the path from the initial state to the goal state.
         :param parent: Dictionary contains all children parents and the direction.
-        :return: List of directions to the goal state.
+        :return: List of directions and states to the goal state.
         """
         path = []
+        states = []
         node = 12345678
         while parent[node][1] is not None:
+            states.append(str(parent[node][1]))
             path.append(parent[node][1])
             node = parent[node][0]
 
         path.reverse()
-        return path
+        states.reverse()
+        return path, states
 
     @staticmethod
-    def info(running_time, expanded_nodes, path, search_depth, cost):
+    def info(running_time, expanded_nodes, path, states, search_depth, cost):
         """
+        :param states: States of the path to the goal.
         :param running_time: Searching running time.
         :param expanded_nodes: Number of expanded nodes.
         :param path: Path to the goal.
@@ -113,7 +117,8 @@ class Service:
             "path": path,
             "running_time": running_time,
             "cost": cost,
-            "search_depth": search_depth
+            "search_depth": search_depth,
+            "states": states
         }
 
         return solution
