@@ -23,12 +23,14 @@ class IDS:
         while not succeed:
             
             # Try to solve with the current limit
-            # print(f"limit: {limit}")
             result = IDS.iterate(initial_state, limit)
             
-            # add the new number of expanded nodes and check if it was a successfull search
-            expanded_nodes += result["expanded_nodes"]
-            if result["path"] != "failed":
+            # if a number is returned, it means that the limit is not enough,
+            # and this number is the expanded nodes with this limit
+            if type(result) == int: 
+                expanded_nodes += result
+            else : 
+                expanded_nodes += result["expanded_nodes"]
                 succeed = True
                 break
             
@@ -38,8 +40,8 @@ class IDS:
         # End of the timer 
         end = time.time()
         running_time = (end - start) * 1000
-        print(f"IDS took {running_time} ms with {expanded_nodes} expanded nodes and path {result['path']} with limit {limit}")
-        return Service.info(running_time, expanded_nodes, result["path"], limit, limit) 
+        # print(f"IDS took {running_time} ms with {expanded_nodes} expanded nodes and path {result['path']} with limit {limit}")
+        return Service.info(running_time, expanded_nodes, result["path"], result["states"], limit, limit) 
         
     
     @staticmethod
@@ -48,42 +50,45 @@ class IDS:
         """
         number of expanded nodes
         search frontier
-        parent dictionary to trace the path, cost and direction of move
+        parent dictionary to trace the path, direction and cost
         """
         expanded_nodes = 0
-        frontier = [initial_state]
+        frontier = [(initial_state, 0)]
         parent = {initial_state: [None, None, 0]}
 
         while len(frontier) > 0:
             
-            # get next level state
-            state = frontier.pop()
+            # get next state to be expanded with its cost
+            state_with_cost = frontier.pop()
+            state = state_with_cost[0]
+            cost = state_with_cost[1]
             # mark node as expanded
             expanded_nodes += 1
 
             # check if the state is the goal state
             if state == 12345678:
-                # print("Found it!!!!!")
-                return Service.info(0, expanded_nodes, Service.get_path(parent), limit, limit)
+                path, states = Service.get_path(parent)
+                return Service.info(0, expanded_nodes, path, states, limit, limit)
 
             # get next states
             children = Service.get_children(state)
             # get the cost of next level
-            cost = parent[state][2] + 1
+            cost += 1
 
             if (cost <= limit):
                 for child, move in children.items():
                     # append the child state to the frontier
-                    frontier.append(child)
-                    if limit == 22 :
-                        print(f"child: {child}")
-                    # print(f"child: {child}")
-                    # append the child states to the parent dictionary if it's new
-                    # if child not in parent:
-                    parent[child] = [state, move, cost]
-                    # parent[child][2] = cost
-                    # if the child state is already in the parent dictionary, only the cost is updated not to stuck in a loop,
-                    # the cost won't affect as the steps will be the limit depth,
-                    # while the parent of the state not changed guarantees that the path is the shortest 
+                    frontier.append((child, cost))
+                    if child not in parent.keys() or parent[child][2] > cost:
+                        parent[child] = [state, move, cost]
+                    """
+                    if the child state is not in the parent dictionary or it exists but with higher cost,
+                    add this new entry or override it with the new cost,
+                    that means that there is a shorter path to this state than the one already exists
+                    and hence, this guarantees optimlaity of the solution 
+                    as parent dictionary is used to trace the optimal path to the goal state
+                    while the frontier keeps the actual depth of the state not the optimal to compare with our limit
+                    """
         
-        return Service.info("failed", expanded_nodes, "failed", "failed", "failed")
+        return expanded_nodes
+
