@@ -10,7 +10,7 @@ class Puzzle(QMainWindow):
         self.algorithm_index = 0
         self.initial_state = 12345678
         self.current_step = 0
-        self.steps = ["125340678","120345678", "102345678", "012345678"] #for testing
+        self.steps = []
         self.setWindowTitle("8-Puzzle Solver")
         self.setGeometry(650, 200, 700, 700)
         self.setWindowIcon(QIcon("icon.jpg"))
@@ -251,6 +251,10 @@ class Puzzle(QMainWindow):
                 QMessageBox.warning(self, "Unfortunately", "This Puzzle is Unsolvable")
             else :
                 self.show_output(solution)
+                self.steps = solution["states"]
+                self.steps.append("012345678")
+                print(self.steps)
+                self.current_step = 0
                 self.timer.start(1000)
 
     
@@ -258,13 +262,26 @@ class Puzzle(QMainWindow):
         if self.current_step < len(self.steps):
             step = self.steps[self.current_step]
             idx = 0
+            cnt = 0
+
             for cell in self.cells:
-                if step[idx] != '0' :
+                if len(step) < 9 and cnt == 0 :
+                    c = '0'
+                    idx-=1
+                else:
+                    c = step[idx]
+
+                if c != '0' :
                     cell.setStyleSheet("font-size: 20px; font-weight: bold; border: 5px solid #0a0a66; border-radius: 5px")
                 else:
                     cell.setStyleSheet("background-color: #bfbfbf;font-size: 20px; font-weight: bold; border-radius: 5px;")
-                cell.setText(step[idx])
+                
+                cell.setText(c)
+                
+                cnt +=1
                 idx +=1
+
+
             self.current_step += 1
         else:
             self.current_step = 0
@@ -272,6 +289,9 @@ class Puzzle(QMainWindow):
 
     def stop_steps(self):
         self.timer.stop()
+        for cell in self.cells:
+            cell.setStyleSheet("font-size: 20px; font-weight: bold; border: 5px solid #0a0a66; border-radius: 5px")
+
     
     def set_algorithm(self):
         self.algorithm_index = self.algorithms_list.currentIndex()
