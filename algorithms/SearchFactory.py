@@ -1,5 +1,8 @@
 from algorithms.BFS import BFS
 from algorithms.DFS import DFS
+from algorithms.IDS import IDS
+from algorithms.Informed import Informed
+from service.Service import Service
 
 
 class SearchFactory:
@@ -9,3 +12,9 @@ class SearchFactory:
             return DFS().execute(initial_state)
         elif search_algorithm.upper() == "BFS":
             return BFS().execute(initial_state)
+        elif search_algorithm.upper() == "IDS":
+            return IDS().execute(initial_state)
+        elif search_algorithm.upper() == "A*(EUCLIDEAN)":
+            return Informed().execute(initial_state, Service.euclidean_distance)
+        elif search_algorithm.upper() == "A*(MANHAATTEN)":
+            return IDS().execute(initial_state, Service.manhatten_distance)
