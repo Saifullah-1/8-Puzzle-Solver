@@ -17,4 +17,4 @@ class SearchFactory:
         elif search_algorithm.upper() == "A*(EUCLIDEAN)":
             return Informed().execute(initial_state, Service.euclidean_distance)
         elif search_algorithm.upper() == "A*(MANHAATTEN)":
-            return IDS().execute(initial_state, Service.manhatten_distance)
+            return Informed().execute(initial_state, Service.manhatten_distance)

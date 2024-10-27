@@ -19,7 +19,7 @@ class Informed:
         starts the timer
         """
         frontier = heapdict()
-        frontier.put(Service.heuristic_function(initial_state), initial_state)
+        frontier[initial_state] = heuristic_function(initial_state)
         search_depth = 0
         visited = set()
         parent = {initial_state: (None, None, 0)}
@@ -28,10 +28,11 @@ class Informed:
         while len(frontier) > 0:
             
             # state to be expanded
-            current = frontier.peekitem()
+            current = frontier.popitem()
             state = current[0]
             # add the state to the visited set
             visited.add(state)
+            
             # check if the state is the goal state
             if state == 12345678:
                 break
@@ -49,8 +50,11 @@ class Informed:
                     continue
                 # getting the total estimated cost for this child (heuristic + depth)
                 total_cost = depth + heuristic_function(child)
+                # print(heuristic_function(child))
                 # if it's in the frontier, check if the new cost is less than the old cost
-                if child in frontier:
+                if child in frontier.keys():
+                    # state_index = frontier.values().index(child)
+                    # current_cost = frontier.keys()[state_index]
                     if total_cost < frontier[child]:
                         frontier[child] = total_cost
                     else:
@@ -65,4 +69,19 @@ class Informed:
         running_time = (end - start) * 1000
         cost = parent[12345678][2]
         
+        print(f"expanded nodes: {expanded_nodes}, took time: {running_time} and costs: {cost}")
         return Service.info(running_time, expanded_nodes, path, states, search_depth, cost)
+    
+    
+    
+# test = heapdict()
+# test[1] = "ane"
+# # test["one"] = 1
+# # test["two"] = 0
+# test[0] = "two"
+# print(test.popitem())
+
+
+state =  328451670
+Informed.execute(state, Service.manhatten_distance)
+Informed.execute(state, Service.euclidean_distance)

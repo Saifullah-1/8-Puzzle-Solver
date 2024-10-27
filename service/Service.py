@@ -95,7 +95,7 @@ class Service:
         states = []
         node = 12345678
         while parent[node][1] is not None:
-            states.append(str(parent[node][0]))
+            states.append(str(node))
             path.append(parent[node][1])
             node = parent[node][0]
 
@@ -155,7 +155,7 @@ class Service:
             true_row = i // 3
             true_col = i % 3
             # Calculate the manhatten distance
-            distance += abs(row - true_row) + abs(col - true_col)
+            distance += (abs(row - true_row) + abs(col - true_col))
         
         return distance
     
