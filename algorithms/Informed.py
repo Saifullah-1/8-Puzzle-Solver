@@ -60,9 +60,9 @@ class Informed:
                 parent[child] = [state, move, depth]
         
         end = time.time()
-        path = Service.get_path(parent)
+        path,states = Service.get_path(parent)
         expanded_nodes = len(visited)
         running_time = (end - start) * 1000
         cost = parent[12345678][2]
         
-        return Service.info(running_time, expanded_nodes, path, search_depth, cost)
+        return Service.info(running_time, expanded_nodes, path, states, search_depth, cost)

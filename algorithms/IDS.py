@@ -63,7 +63,7 @@ class IDS:
 
             # check if the state is the goal state
             if state == 12345678:
-                print("Found it!!!!!")
+                # print("Found it!!!!!")
                 return Service.info(0, expanded_nodes, Service.get_path(parent), limit, limit)
 
             # get next states
@@ -87,10 +87,3 @@ class IDS:
                     # while the parent of the state not changed guarantees that the path is the shortest 
         
         return Service.info("failed", expanded_nodes, "failed", "failed", "failed")
-    
-    
-
-# IDS().execute(102345678)
-# IDS().execute(102345678)
-# IDS().execute(125340678)
-IDS().execute(123456780)
