@@ -1,3 +1,4 @@
+import os
 from PyQt5.QtWidgets import QMainWindow, QLabel, QWidget, QVBoxLayout,QHBoxLayout,QGridLayout, QPushButton, QComboBox, QLineEdit, QMessageBox, QPlainTextEdit, QScrollArea
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QTimer
@@ -12,7 +13,7 @@ class Puzzle(QMainWindow):
         self.steps = []
         self.setWindowTitle("8-Puzzle Solver")
         self.setGeometry(650, 200, 700, 700)
-        self.setWindowIcon(QIcon("icon.jpg"))
+        self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "icon.png")))
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowMaximizeButtonHint)
         self.initUI()
 
@@ -227,6 +228,9 @@ class Puzzle(QMainWindow):
         
 
     def solve(self):
+            if not self.check_input():
+                return
+            
             solution = {}
             self.set_initial_state() 
             
@@ -253,7 +257,7 @@ class Puzzle(QMainWindow):
                 self.steps = solution["states"]
                 self.steps.append("012345678")
                 self.current_step = 0
-                self.timer.start(1000)
+                self.timer.start(100)
 
     
     def solve_steps(self):
@@ -297,10 +301,23 @@ class Puzzle(QMainWindow):
         self.initial_state = 0 
         for cell in self.cells:
             self.initial_state = self.initial_state * 10 + int(cell.text())
+    
+    def check_input(self):
+        check =[]
+        for cell in self.cells:
+            if cell.text() in check  or not cell.text().isdigit():
+                QMessageBox.warning(self, "Warning", "Invalid Input")
+                return False
+            else:
+                check.append(cell.text())
+        return True
+                
+               
+
            
     def show_output(self, solution):
         self.expanded_nodes.setText(str(solution["expanded_nodes"]))
-        self.running_time.setText(str(round(solution["running_time"], 5)))
+        self.running_time.setText(str(round(solution["running_time"], 5))+ ' ms')
         self.cost.setText(str(solution["cost"]))
         self.search_depth.setText(str(solution["search_depth"]))
         

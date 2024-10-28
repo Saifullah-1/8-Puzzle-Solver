@@ -16,16 +16,19 @@ class DFS:
         visited = set()
 
         # search frontier
-        frontier = [initial_state]
+        frontier = [(initial_state, 0)]
 
-        # parent dictionary to trace the path, cost and direction of move
-        parent = {initial_state: (None, None, 0)}
+        # parent dictionary to trace the path and direction of move
+        parent = {initial_state: (None, None)}
+
+        # cost of the goal
+        cost = 0
 
         start = time.time()
 
         while len(frontier) > 0:
             # get next level state
-            state = frontier.pop()
+            state, cost = frontier.pop()
 
             # mark node as visited
             visited.add(state)
@@ -37,25 +40,21 @@ class DFS:
             # get next states
             children = Service.get_children(state)
 
-            # get the cost of next level
-            cost = parent[state][2] + 1
-
             # evaluate the max depth
-            search_depth = max(search_depth, cost)
+            search_depth = max(search_depth, cost + 1)
 
             for child, move in children.items():
                 # check if the state is not visited
                 if child not in visited and child not in parent:
                     # append the child state to the frontier
-                    frontier.append(child)
+                    frontier.append((child, cost + 1))
                     # append the child states to the parent dictionary
-                    parent[child] = [state, move, cost]
+                    parent[child] = [state, move]
 
 
         end = time.time()
         path, states = Service.get_path(parent)
         expanded_nodes = len(visited)
         running_time = (end - start) * 1000
-        cost = parent[12345678][2]
 
         return Service.info(running_time, expanded_nodes, path, states, search_depth, cost)
