@@ -10,9 +10,6 @@ class BFS:
         if not Service.is_solvable(initial_state):
             return False
 
-        # max search depth
-        search_depth = 0
-
         # visited nodes
         visited = set()
 
@@ -42,9 +39,6 @@ class BFS:
             # get the cost of next level
             cost = parent[state][2] + 1
 
-            # evaluate the max depth
-            search_depth = max(search_depth, cost)
-
             for child, move in children.items():
                 # check if the state is not visited
                 if child not in visited and child not in parent:
@@ -59,4 +53,4 @@ class BFS:
         running_time = (end - start) * 1000
         cost = parent[12345678][2]
 
-        return Service.info(running_time, expanded_nodes, path, states, search_depth, cost)
+        return Service.info(running_time, expanded_nodes, path, states, cost, cost)
