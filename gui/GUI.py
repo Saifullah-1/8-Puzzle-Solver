@@ -257,7 +257,7 @@ class Puzzle(QMainWindow):
                 self.steps = solution["states"]
                 self.steps.append("012345678")
                 self.current_step = 0
-                self.timer.start(1500)
+                self.timer.start(100)
 
     
     def solve_steps(self):
@@ -317,7 +317,7 @@ class Puzzle(QMainWindow):
            
     def show_output(self, solution):
         self.expanded_nodes.setText(str(solution["expanded_nodes"]))
-        self.running_time.setText(str(round(solution["running_time"], 5)))
+        self.running_time.setText(str(round(solution["running_time"], 5))+ ' ms')
         self.cost.setText(str(solution["cost"]))
         self.search_depth.setText(str(solution["search_depth"]))
         
