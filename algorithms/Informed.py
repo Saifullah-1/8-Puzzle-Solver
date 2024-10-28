@@ -66,5 +66,11 @@ class Informed:
         running_time = (end - start) * 1000
         cost = parent[12345678][2]
         
-        # print(f"expanded nodes: {expanded_nodes}, took time: {running_time} and costs: {cost}")
+        # print(f"expanded nodes: {expanded_nodes}, took time: {running_time} and costs: {cost} and serach depth: {search_depth}")
+        print(f"nodes: {path}")
         return Service.info(running_time, expanded_nodes, path, states, search_depth, cost)
+    
+    
+state = 158327064
+Informed.execute(state, Service.manhattan_distance)
+Informed.execute(state, Service.euclidean_distance)

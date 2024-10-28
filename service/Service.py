@@ -136,11 +136,11 @@ class Service:
         return state
     
     @staticmethod
-    def manhatten_distance(state: int):
+    def manhattan_distance(state: int):
         """
-        Calculates the manhatten distance of a given state.
-        :param state: The state to calculate the manhatten distance.
-        :return: The manhatten distance of the given state.
+        Calculates the manhattan distance of a given state.
+        :param state: The state to calculate the manhattan distance.
+        :return: The manhattan distance of the given state.
         """
         
         state = Service.refine_state(state)
@@ -154,7 +154,7 @@ class Service:
             # getting the correcr row and col of tile with number i
             true_row = i // 3
             true_col = i % 3
-            # Calculate the manhatten distance
+            # Calculate the manhattan distance
             distance += (abs(row - true_row) + abs(col - true_col))
         
         return distance

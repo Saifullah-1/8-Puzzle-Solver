@@ -40,7 +40,7 @@ class IDS:
         # End of the timer 
         end = time.time()
         running_time = (end - start) * 1000
-        # print(f"IDS took {running_time} ms with {expanded_nodes} expanded nodes and path {result['path']} with limit {limit}")
+        print(f"IDS took {running_time} ms with {expanded_nodes} expanded nodes with limit {limit}")
         return Service.info(running_time, expanded_nodes, result["path"], result["states"], limit, limit) 
         
     
@@ -62,6 +62,9 @@ class IDS:
             state_with_cost = frontier.pop()
             state = state_with_cost[0]
             cost = state_with_cost[1]
+            # If the cost isn't the optimal one for this state, skip it
+            if (cost > parent[state][2]):
+                continue
             # mark node as expanded
             expanded_nodes += 1
 
@@ -78,8 +81,8 @@ class IDS:
             if (cost <= limit):
                 for child, move in children.items():
                     # append the child state to the frontier
-                    frontier.append((child, cost))
                     if child not in parent.keys() or parent[child][2] > cost:
+                        frontier.append((child, cost))
                         parent[child] = [state, move, cost]
                     """
                     if the child state is not in the parent dictionary or it exists but with higher cost,
@@ -91,4 +94,3 @@ class IDS:
                     """
         
         return expanded_nodes
-
